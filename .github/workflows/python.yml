@@ -1,0 +1,44 @@
+name: Python Examples CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check-python-examples:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Find and check all Python examples
+        run: |
+          set -e
+
+          if [ ! -d "examples" ]; then
+            echo "No examples/ directory. Skipping."
+            exit 0
+          fi
+
+          echo "Searching for Python examples..."
+
+          for dir in $(find examples -type f -name "main.py" -exec dirname {} \;); do
+            echo "=============================="
+            echo "Checking example in: $dir"
+            cd $dir
+
+            if [ -f "requirements.txt" ]; then
+              pip install -r requirements.txt
+            fi
+
+            echo "Compiling Python files..."
+            python -m compileall .
+
+            cd - > /dev/null
+          done
+
