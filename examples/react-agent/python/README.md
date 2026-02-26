@@ -1,16 +1,70 @@
-📖 Based on article:
+# ReAct Agent - Python Implementation
 
-EN:
+Runnable implementation of a **ReAct (Reason + Act)** agent that performs
+step-by-step reasoning and interacts with external tools in a controlled loop.
+
+---
+
+## Quick start
+
+```bash
+# (optional) create venv
+python -m venv .venv && source .venv/bin/activate
+
+# install dependencies
+pip install -r requirements.txt
+
+# set API key
+export OPENAI_API_KEY="sk-..."
+
+# run the agent
+python main.py
+```
+
+## Full walkthrough
+
+Read the complete implementation guide:
 https://agentpatterns.tech/en/agent-patterns/react-agent
 
-DE:
-https://agentpatterns.tech/de/agent-patterns/react-agent
+## What's inside
 
-FR:
-https://agentpatterns.tech/fr/agent-patterns/react-agent
+- ReAct loop (Think -> Act -> Observe)
+- Tool registry and allowlist-based tool gateway
+- Tool calling interface and action validation
+- Step, tool-call, and time budgeting
+- Stop conditions (timeouts, invalid actions, loop detection, budget limits)
+- Execution state tracking (`history` + `trace`)
 
-ES:
-https://agentpatterns.tech/es/agent-patterns/react-agent
+## Learn the pattern (Docs)
 
-UK:
-https://agentpatterns.tech/uk/agent-patterns/react-agent
+Background concepts used by this example:
+
+- ReAct Agent
+  https://agentpatterns.tech/en/agent-patterns/react-agent
+- Tool Calling
+  https://agentpatterns.tech/en/foundations/tool-calling
+- Stop Conditions
+  https://agentpatterns.tech/en/foundations/stop-conditions
+
+## Project layout
+
+```text
+examples/
+  react-agent/
+    python/
+      README.md
+      main.py
+      llm.py
+      gateway.py
+      tools.py
+      requirements.txt
+```
+
+## Notes
+
+- Code and README are English-only by design.
+- The website provides multilingual explanations and theory.
+
+## License
+
+MIT
