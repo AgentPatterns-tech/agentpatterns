@@ -48,13 +48,14 @@ Background concepts used by this example:
 
 ```text
 examples/
-  write-your-first-agent/
-    python/
-      README.md
-      main.py
-      llm.py
-      evaluator.py
-      requirements.txt
+  start-here/
+    write-your-first-agent/
+      python/
+        README.md
+        main.py
+        llm.py
+        evaluator.py
+        requirements.txt
 ```
 
 ## Notes

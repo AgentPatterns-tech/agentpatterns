@@ -19,37 +19,40 @@ The most important block of the site and the main architecture layer for product
 
 | Example | Local path | Article |
 | --- | --- | --- |
-| <strong><big>ReAct Agent</big></strong> | `examples/react-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/react-agent) |
-| <strong><big>Routing Agent</big></strong> | `examples/routing-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/routing-agent) |
-| <strong><big>Task Decomposition Agent</big></strong> | `examples/task-decomposition-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/task-decomposition-agent) |
+| <strong><big>ReAct Agent</big></strong> | `examples/agent-patterns/react-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/react-agent) |
+| <strong><big>Routing Agent</big></strong> | `examples/agent-patterns/routing-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/routing-agent) |
+| <strong><big>Task Decomposition Agent</big></strong> | `examples/agent-patterns/task-decomposition-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/task-decomposition-agent) |
 
 ### Foundations
 
 | Example | Local path | Article |
 | --- | --- | --- |
-| **Write Your First Agent** | `examples/write-your-first-agent/python` | [Read article](https://agentpatterns.tech/en/start-here/write-your-first-agent) |
-| **Tool Calling Basics** | `examples/tool-calling-basics/python` | [Read article](https://agentpatterns.tech/en/foundations/tool-calling-basics) |
-| **Tool Calling** | `examples/tool-calling/python` | [Read article](https://agentpatterns.tech/en/foundations/tool-calling) |
-| **LLM Limits in Agents** | `examples/llm-limits-agents/python` | [Read article](https://agentpatterns.tech/en/foundations/llm-limits-agents) |
+| **Write Your First Agent** | `examples/start-here/write-your-first-agent/python` | [Read article](https://agentpatterns.tech/en/start-here/write-your-first-agent) |
+| **Tool Calling Basics** | `examples/foundations/tool-calling-basics/python` | [Read article](https://agentpatterns.tech/en/foundations/tool-calling-basics) |
+| **Tool Calling** | `examples/foundations/tool-calling/python` | [Read article](https://agentpatterns.tech/en/foundations/tool-calling) |
+| **LLM Limits in Agents** | `examples/foundations/llm-limits-agents/python` | [Read article](https://agentpatterns.tech/en/foundations/llm-limits-agents) |
 
 ## Project structure
 
 ```text
 examples/
-  write-your-first-agent/
-    python/
-  tool-calling-basics/
-    python/
-  tool-calling/
-    python/
-  llm-limits-agents/
-    python/
-  react-agent/
-    python/
-  routing-agent/
-    python/
-  task-decomposition-agent/
-    python/
+  agent-patterns/
+    react-agent/
+      python/
+    routing-agent/
+      python/
+    task-decomposition-agent/
+      python/
+  foundations/
+    tool-calling-basics/
+      python/
+    tool-calling/
+      python/
+    llm-limits-agents/
+      python/
+  start-here/
+    write-your-first-agent/
+      python/
 ```
 
 ## Quick start
@@ -57,8 +60,9 @@ examples/
 ### 1) Choose an example
 
 ```bash
+CATEGORY=agent-patterns
 EXAMPLE=react-agent
-cd examples/$EXAMPLE/python
+cd examples/$CATEGORY/$EXAMPLE/python
 ```
 
 ### 2) Install and run
