@@ -25,6 +25,7 @@ Return only one JSON object in this exact shape:
 
 Rules:
 - Choose exactly one target from available_routes.
+- Never choose targets from forbidden_targets.
 - Keep args minimal and valid for that target.
 - If previous attempts failed with needs_reroute, choose a different target.
 - Respect routing budgets and avoid unnecessary retries.
@@ -97,6 +98,7 @@ def decide_route(
     *,
     max_route_attempts: int,
     remaining_attempts: int,
+    forbidden_targets: list[str],
 ) -> dict[str, Any]:
     recent_history = history[-3:]
     payload = {
@@ -105,6 +107,7 @@ def decide_route(
             "max_route_attempts": max_route_attempts,
             "remaining_attempts": remaining_attempts,
         },
+        "forbidden_targets": forbidden_targets,
         "state_summary": _build_state_summary(history),
         "recent_history": recent_history,
         "available_routes": ROUTE_CATALOG,

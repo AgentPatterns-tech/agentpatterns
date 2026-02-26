@@ -44,6 +44,10 @@ def _normalize_for_hash(value: Any) -> Any:
     return value
 
 
+def _normalize_ticket(value: str) -> str:
+    return " ".join(value.strip().split())
+
+
 def args_hash(args: dict[str, Any]) -> str:
     normalized = _normalize_for_hash(args or {})
     raw = _stable_json(normalized)
@@ -51,7 +55,11 @@ def args_hash(args: dict[str, Any]) -> str:
 
 
 def validate_route_action(
-    action: Any, *, allowed_routes: set[str]
+    action: Any,
+    *,
+    allowed_routes: set[str],
+    previous_target: str | None = None,
+    previous_status: str | None = None,
 ) -> dict[str, Any]:
     if not isinstance(action, dict):
         raise StopRun("invalid_route:not_object")
@@ -81,8 +89,13 @@ def validate_route_action(
     ticket = args.get("ticket")
     if not isinstance(ticket, str) or not ticket.strip():
         raise StopRun("invalid_route:missing_ticket")
+    ticket = _normalize_ticket(ticket)
+    normalized_args = {**args, "ticket": ticket}
 
-    return {"kind": "route", "target": target, "args": args}
+    if previous_status == "needs_reroute" and target == previous_target:
+        raise StopRun("invalid_route:repeat_target_after_reroute")
+
+    return {"kind": "route", "target": target, "args": normalized_args}
 
 
 class RouteGateway:

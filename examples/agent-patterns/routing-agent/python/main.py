@@ -55,39 +55,6 @@ def run_routing(goal: str) -> dict[str, Any]:
                 "history": history,
             }
 
-        try:
-            raw_route = decide_route(
-                goal=goal,
-                history=history,
-                max_route_attempts=BUDGET.max_route_attempts,
-                remaining_attempts=(BUDGET.max_route_attempts - attempt + 1),
-            )
-        except LLMTimeout:
-            return {
-                "status": "stopped",
-                "stop_reason": "llm_timeout",
-                "phase": "route",
-                "trace": trace,
-                "history": history,
-            }
-
-        try:
-            route_action = validate_route_action(
-                raw_route,
-                allowed_routes=ALLOWED_ROUTE_TARGETS_POLICY,
-            )
-        except StopRun as exc:
-            return {
-                "status": "stopped",
-                "stop_reason": exc.reason,
-                "phase": "route",
-                "raw_route": raw_route,
-                "trace": trace,
-                "history": history,
-            }
-
-        target = route_action["target"]
-        route_args = route_action["args"]
         previous_step = history[-1] if history else None
         previous_observation = (
             previous_step.get("observation")
@@ -105,16 +72,48 @@ def run_routing(goal: str) -> dict[str, Any]:
             if isinstance(previous_route, dict)
             else None
         )
+        forbidden_targets = (
+            [previous_target]
+            if previous_status == "needs_reroute" and isinstance(previous_target, str)
+            else []
+        )
 
-        if previous_status == "needs_reroute" and target == previous_target:
+        try:
+            raw_route = decide_route(
+                goal=goal,
+                history=history,
+                max_route_attempts=BUDGET.max_route_attempts,
+                remaining_attempts=(BUDGET.max_route_attempts - attempt + 1),
+                forbidden_targets=forbidden_targets,
+            )
+        except LLMTimeout:
             return {
                 "status": "stopped",
-                "stop_reason": "invalid_route:repeat_target_after_reroute",
+                "stop_reason": "llm_timeout",
                 "phase": "route",
-                "route": route_action,
                 "trace": trace,
                 "history": history,
             }
+
+        try:
+            route_action = validate_route_action(
+                raw_route,
+                allowed_routes=ALLOWED_ROUTE_TARGETS_POLICY,
+                previous_target=previous_target,
+                previous_status=previous_status,
+            )
+        except StopRun as exc:
+            return {
+                "status": "stopped",
+                "stop_reason": exc.reason,
+                "phase": "route",
+                "raw_route": raw_route,
+                "trace": trace,
+                "history": history,
+            }
+
+        target = route_action["target"]
+        route_args = route_action["args"]
 
         try:
             observation = gateway.call(target, route_args)
@@ -166,6 +165,8 @@ def run_routing(goal: str) -> dict[str, Any]:
                 "stop_reason": "route_bad_observation",
                 "phase": "delegate",
                 "route": route_action,
+                "expected_statuses": ["needs_reroute", "done"],
+                "received_status": observation_status,
                 "bad_observation": observation,
                 "trace": trace,
                 "history": history,
