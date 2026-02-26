@@ -17,20 +17,20 @@ If you want to learn how to build agents with real execution loops, tool boundar
 
 The most important block of the site and the main architecture layer for production agents.
 
-| Example | Focus | Local path | Article |
-| --- | --- | --- | --- |
-| ReAct Agent | `Think -> Act -> Observe` with budgets | `examples/react-agent/python` | https://agentpatterns.tech/en/agent-patterns/react-agent |
-| Routing Agent | Delegate to best specialist route | `examples/routing-agent/python` | https://agentpatterns.tech/en/agent-patterns/routing-agent |
-| Task Decomposition Agent | `Plan -> Execute -> Combine` workflow | `examples/task-decomposition-agent/python` | https://agentpatterns.tech/en/agent-patterns/task-decomposition-agent |
+| Example | Local path | Article |
+| --- | --- | --- |
+| <strong><big>ReAct Agent</big></strong> | `examples/react-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/react-agent) |
+| <strong><big>Routing Agent</big></strong> | `examples/routing-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/routing-agent) |
+| <strong><big>Task Decomposition Agent</big></strong> | `examples/task-decomposition-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/task-decomposition-agent) |
 
 ### Foundations
 
-| Example | Focus | Local path | Article |
-| --- | --- | --- | --- |
-| Write Your First Agent | First loop (`Act -> Check -> Retry`) | `examples/write-your-first-agent/python` | https://agentpatterns.tech/en/start-here/write-your-first-agent |
-| Tool Calling Basics | Basic tool execution loop | `examples/tool-calling-basics/python` | https://agentpatterns.tech/en/foundations/tool-calling-basics |
-| Tool Calling | Tool + action restrictions (policy boundary) | `examples/tool-calling/python` | https://agentpatterns.tech/en/foundations/tool-calling |
-| LLM Limits in Agents | Validation, citations, confidence, handoff | `examples/llm-limits-agents/python` | https://agentpatterns.tech/en/foundations/llm-limits-agents |
+| Example | Local path | Article |
+| --- | --- | --- |
+| **Write Your First Agent** | `examples/write-your-first-agent/python` | [Read article](https://agentpatterns.tech/en/start-here/write-your-first-agent) |
+| **Tool Calling Basics** | `examples/tool-calling-basics/python` | [Read article](https://agentpatterns.tech/en/foundations/tool-calling-basics) |
+| **Tool Calling** | `examples/tool-calling/python` | [Read article](https://agentpatterns.tech/en/foundations/tool-calling) |
+| **LLM Limits in Agents** | `examples/llm-limits-agents/python` | [Read article](https://agentpatterns.tech/en/foundations/llm-limits-agents) |
 
 ## Project structure
 
