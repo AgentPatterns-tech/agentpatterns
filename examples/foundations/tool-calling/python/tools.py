@@ -1,8 +1,8 @@
 from typing import Any
 
 CUSTOMERS = {
-    101: {"id": 101, "name": "Iryna", "tier": "free", "email": "iryna@gmail.com"},
-    202: {"id": 202, "name": "Taras", "tier": "pro", "email": "taras@company.local"},
+    101: {"id": 101, "name": "Anna", "tier": "free", "email": "anna@gmail.com"},
+    202: {"id": 202, "name": "Max", "tier": "pro", "email": "max@company.local"},
 }
 
 

@@ -7,7 +7,7 @@ MAX_STEPS = 6
 
 TASK = (
     "For customer_id=101, check the profile, upgrade tier to pro, "
-    "and send a confirmation email to iryna@gmail.com. "
+    "and send a confirmation email to anna@gmail.com. "
     "If any action is blocked, explain the safe manual next step."
 )
 
