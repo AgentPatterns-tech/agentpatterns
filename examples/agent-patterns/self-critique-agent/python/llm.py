@@ -98,6 +98,24 @@ Rules:
 - Do not output markdown or extra keys.
 """.strip()
 
+REVISE_SYSTEM_PROMPT_STRICT = """
+You are an editor applying a constrained rewrite.
+Return exactly one JSON object:
+{
+  "revised_answer": "updated answer"
+}
+
+Rules:
+- Apply required_changes only.
+- Keep original scope and customer intent.
+- Do not add new facts or numbers.
+- Keep the answer concise and actionable.
+- You MUST satisfy each required_changes item exactly.
+- For ADD/MUST_INCLUDE: include the quoted phrase verbatim.
+- For REMOVE/MUST_REMOVE: ensure the quoted phrase does not appear.
+- Do not output markdown or extra keys.
+""".strip()
+
 
 
 def _get_client() -> OpenAI:
@@ -196,6 +214,7 @@ def revise_once(
     incident_context: dict[str, Any],
     draft: str,
     required_changes: list[str],
+    strict_mode: bool = False,
 ) -> str:
     payload = {
         "goal": goal,
@@ -203,7 +222,8 @@ def revise_once(
         "draft": draft,
         "required_changes": required_changes,
     }
-    data = _chat_json(system_prompt=REVISE_SYSTEM_PROMPT, payload=payload)
+    system_prompt = REVISE_SYSTEM_PROMPT_STRICT if strict_mode else REVISE_SYSTEM_PROMPT
+    data = _chat_json(system_prompt=system_prompt, payload=payload)
 
     revised = data.get("revised_answer")
     if not isinstance(revised, str):

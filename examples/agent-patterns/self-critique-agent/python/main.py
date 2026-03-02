@@ -172,30 +172,44 @@ def run_self_critique_agent(*, goal: str, incident_context: dict[str, Any]) -> d
     revised = False
 
     if critique["decision"] == "revise":
-        if (time.monotonic() - started) > BUDGET.max_seconds:
-            return stopped("max_seconds", phase="revise")
+        revise_attempts = 0
+        revise_retried = False
+        revised_payload: dict[str, Any] | None = None
+        for attempt in range(1, 3):
+            if (time.monotonic() - started) > BUDGET.max_seconds:
+                return stopped("max_seconds", phase="revise")
 
-        try:
-            revised_raw = revise_once(
-                goal=goal,
-                incident_context=incident_context,
-                draft=draft,
-                required_changes=critique["required_changes"],
-            )
-            revised_payload = gateway.validate_revision(
-                original=draft,
-                revised=revised_raw,
-                context=incident_context,
-                required_changes=critique["required_changes"],
-            )
-        except LLMTimeout:
-            return stopped("llm_timeout", phase="revise")
-        except LLMInvalid as exc:
-            return stopped(exc.args[0], phase="revise")
-        except LLMEmpty:
-            return stopped("llm_empty", phase="revise")
-        except StopRun as exc:
-            return stopped(exc.reason, phase="revise")
+            revise_attempts = attempt
+            strict_mode = attempt > 1
+            try:
+                revised_raw = revise_once(
+                    goal=goal,
+                    incident_context=incident_context,
+                    draft=draft,
+                    required_changes=critique["required_changes"],
+                    strict_mode=strict_mode,
+                )
+                revised_payload = gateway.validate_revision(
+                    original=draft,
+                    revised=revised_raw,
+                    context=incident_context,
+                    required_changes=critique["required_changes"],
+                )
+                break
+            except LLMTimeout:
+                return stopped("llm_timeout", phase="revise")
+            except LLMInvalid as exc:
+                return stopped(exc.args[0], phase="revise")
+            except LLMEmpty:
+                return stopped("llm_empty", phase="revise")
+            except StopRun as exc:
+                if exc.reason == "patch_violation:required_changes_not_applied" and attempt < 2:
+                    revise_retried = True
+                    continue
+                return stopped(exc.reason, phase="revise")
+
+        if revised_payload is None:
+            return stopped("patch_violation:required_changes_not_applied", phase="revise")
 
         final_answer = revised_payload["answer"]
         revised = True
@@ -209,6 +223,8 @@ def run_self_critique_agent(*, goal: str, incident_context: dict[str, Any]) -> d
                 "required_changes_total": revised_payload["required_changes_total"],
                 "required_changes_enforced": revised_payload["required_changes_enforced"],
                 "required_changes_unenforced": revised_payload["required_changes_unenforced"],
+                "attempts_used": revise_attempts,
+                "retried": revise_retried,
                 "revised_hash": text_hash(final_answer),
                 "ok": True,
             }
