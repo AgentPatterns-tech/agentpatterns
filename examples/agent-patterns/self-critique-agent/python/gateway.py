@@ -16,7 +16,7 @@ class StopRun(Exception):
 
 @dataclass(frozen=True)
 class Budget:
-    max_seconds: int = 30
+    max_seconds: int = 120
     max_draft_chars: int = 900
     max_risks: int = 5
     max_required_changes: int = 5
@@ -184,9 +184,43 @@ def _is_enforceable_required_change(item: str) -> bool:
 
 
 def _contains_normalized_phrase(*, text: str, phrase: str) -> bool:
-    normalized_text = _normalize_space(text).lower()
-    normalized_phrase = _normalize_space(phrase).lower()
+    # Compare using token-like normalization so punctuation differences
+    # (e.g. trailing dots/commas) do not cause false negatives.
+    normalized_text = re.sub(r"[^a-z0-9% ]+", " ", _normalize_space(text).lower())
+    normalized_phrase = re.sub(r"[^a-z0-9% ]+", " ", _normalize_space(phrase).lower())
+    normalized_text = " ".join(normalized_text.split())
+    normalized_phrase = " ".join(normalized_phrase.split())
     return normalized_phrase in normalized_text
+
+
+def _remove_phrase_occurrences(*, text: str, phrase: str) -> str:
+    cleaned = text
+    normalized_phrase = _normalize_space(phrase).strip()
+    if not normalized_phrase:
+        return cleaned
+
+    variants = {normalized_phrase, normalized_phrase.rstrip(".!?")}
+    for variant in variants:
+        if not variant:
+            continue
+        cleaned = re.sub(re.escape(variant), "", cleaned, flags=re.IGNORECASE)
+
+    cleaned = re.sub(r"\s+\.", ".", cleaned)
+    cleaned = re.sub(r"[ \t]{2,}", " ", cleaned)
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
+    return cleaned.strip()
+
+
+def _append_phrase_sentence(*, text: str, phrase: str) -> str:
+    sentence = _normalize_space(phrase).strip()
+    if not sentence:
+        return text
+
+    out = text.rstrip()
+    if out and out[-1] not in ".!?":
+        out += "."
+    separator = "\n\n" if "\n\n" in out else " "
+    return (out + separator + sentence).strip()
 
 
 
@@ -307,6 +341,28 @@ class SelfCritiqueGateway:
     def enforce_execution_decision(self, decision: str) -> None:
         if decision not in self.allow_execution_decisions:
             raise StopRun(f"critique_decision_denied_execution:{decision}")
+
+    def apply_required_changes_fallback(self, *, text: str, required_changes: list[str]) -> str:
+        """
+        Deterministic fallback for enforceable required changes:
+        remove MUST_REMOVE/REMOVE phrases and append missing MUST_INCLUDE/ADD phrases.
+        """
+        candidate = (text or "").strip()
+        if not candidate:
+            return candidate
+
+        phrase_rules = _extract_required_change_rules(required_changes)
+        must_include = phrase_rules["must_include"]
+        must_remove = phrase_rules["must_remove"]
+
+        for phrase in must_remove:
+            candidate = _remove_phrase_occurrences(text=candidate, phrase=phrase)
+
+        for phrase in must_include:
+            if not _contains_normalized_phrase(text=candidate, phrase=phrase):
+                candidate = _append_phrase_sentence(text=candidate, phrase=phrase)
+
+        return candidate.strip()
 
     def validate_revision(
         self,

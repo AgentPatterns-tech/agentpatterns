@@ -17,7 +17,7 @@ GOAL = (
 INCIDENT_CONTEXT = build_incident_context(report_date="2026-03-06", region="US")
 
 BUDGET = Budget(
-    max_seconds=30,
+    max_seconds=120,
     max_draft_chars=900,
     max_risks=5,
     max_required_changes=5,
@@ -175,7 +175,8 @@ def run_self_critique_agent(*, goal: str, incident_context: dict[str, Any]) -> d
         revise_attempts = 0
         revise_retried = False
         revised_payload: dict[str, Any] | None = None
-        for attempt in range(1, 3):
+        last_revised_candidate = draft
+        for attempt in range(1, 4):
             if (time.monotonic() - started) > BUDGET.max_seconds:
                 return stopped("max_seconds", phase="revise")
 
@@ -189,6 +190,7 @@ def run_self_critique_agent(*, goal: str, incident_context: dict[str, Any]) -> d
                     required_changes=critique["required_changes"],
                     strict_mode=strict_mode,
                 )
+                last_revised_candidate = revised_raw
                 revised_payload = gateway.validate_revision(
                     original=draft,
                     revised=revised_raw,
@@ -203,9 +205,27 @@ def run_self_critique_agent(*, goal: str, incident_context: dict[str, Any]) -> d
             except LLMEmpty:
                 return stopped("llm_empty", phase="revise")
             except StopRun as exc:
-                if exc.reason == "patch_violation:required_changes_not_applied" and attempt < 2:
+                if exc.reason == "patch_violation:required_changes_not_applied" and attempt < 3:
                     revise_retried = True
                     continue
+                if exc.reason == "patch_violation:required_changes_not_applied":
+                    # Final fallback: enforce required phrase edits deterministically.
+                    try:
+                        fallback_revised = gateway.apply_required_changes_fallback(
+                            text=last_revised_candidate,
+                            required_changes=critique["required_changes"],
+                        )
+                        revised_payload = gateway.validate_revision(
+                            original=draft,
+                            revised=fallback_revised,
+                            context=incident_context,
+                            required_changes=critique["required_changes"],
+                        )
+                        revise_attempts = attempt + 1
+                        revise_retried = True
+                        break
+                    except StopRun as fallback_exc:
+                        return stopped(fallback_exc.reason, phase="revise")
                 return stopped(exc.reason, phase="revise")
 
         if revised_payload is None:
