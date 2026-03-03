@@ -89,12 +89,15 @@ def run_guarded_policy_agent(*, goal: str, request: dict[str, Any]) -> dict[str,
     rewritten_tools: list[str] = []
     escalated_tools: list[str] = []
 
+    phase = "plan"
+
     try:
         if (time.monotonic() - started) > BUDGET.max_seconds:
             return stopped("max_seconds", phase="plan")
 
         raw_plan = propose_action_plan(goal=goal, request=request)
         actions = validate_plan(raw_plan.get("actions"), max_actions=BUDGET.max_actions)
+        phase = "execute"
 
         for idx, action in enumerate(actions, start=1):
             if (time.monotonic() - started) > BUDGET.max_seconds:
@@ -156,6 +159,8 @@ def run_guarded_policy_agent(*, goal: str, request: dict[str, Any]) -> dict[str,
             if tool_fn is None:
                 return stopped(f"tool_unmapped:{tool_name}", phase="execute")
 
+            # Keep the decision in trace even if execution fails later.
+            trace.append(trace_item)
             observation = gateway.dispatch(
                 tool_name=tool_name,
                 tool_fn=tool_fn,
@@ -168,7 +173,6 @@ def run_guarded_policy_agent(*, goal: str, request: dict[str, Any]) -> dict[str,
 
             trace_item["executed_from"] = executed_from
             trace_item["ok"] = True
-            trace.append(trace_item)
 
             history_item["executed_action"] = executed_action
             history_item["executed_from"] = executed_from
@@ -225,7 +229,7 @@ def run_guarded_policy_agent(*, goal: str, request: dict[str, Any]) -> dict[str,
             "history": history,
         }
     except StopRun as exc:
-        return stopped(exc.reason, phase="execute")
+        return stopped(exc.reason, phase=phase)
     finally:
         gateway.close()
 
