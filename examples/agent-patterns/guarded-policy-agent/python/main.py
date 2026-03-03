@@ -8,7 +8,12 @@ from typing import Any
 from agent import compose_final_answer, propose_action_plan
 from context import build_request
 from gateway import Budget, PolicyGateway, StopRun, validate_plan
-from tools import export_customer_data, fetch_incident_snapshot, send_status_update
+from tools import (
+    create_manual_review_ticket,
+    export_customer_data,
+    fetch_incident_snapshot,
+    send_status_update,
+)
 
 GOAL = (
     "Prepare a customer-safe operations update for a US payments incident. "
@@ -31,16 +36,19 @@ ALLOWED_TOOLS_POLICY = {
     "fetch_incident_snapshot",
     "send_status_update",
     "export_customer_data",
+    "create_manual_review_ticket",
 }
 ALLOWED_TOOLS_EXECUTION = {
     "fetch_incident_snapshot",
     "send_status_update",
+    "create_manual_review_ticket",
 }
 
 TOOLS: dict[str, Any] = {
     "fetch_incident_snapshot": fetch_incident_snapshot,
     "send_status_update": send_status_update,
     "export_customer_data": export_customer_data,
+    "create_manual_review_ticket": create_manual_review_ticket,
 }
 
 
@@ -124,6 +132,12 @@ def run_guarded_policy_agent(*, goal: str, request: dict[str, Any]) -> dict[str,
                 executed_from = "policy_rewrite"
             elif decision.kind == "escalate":
                 escalated_tools.append(action["tool"])
+                escalation_ticket = gateway.dispatch(
+                    tool_name="create_manual_review_ticket",
+                    tool_fn=TOOLS["create_manual_review_ticket"],
+                    args={"reason": decision.reason, "payload": (decision.enforced_action or action)},
+                )
+                history_item["escalation_ticket"] = escalation_ticket
                 human = simulate_human_approval(
                     action=(decision.enforced_action or action),
                     reason=decision.reason,
@@ -131,7 +145,7 @@ def run_guarded_policy_agent(*, goal: str, request: dict[str, Any]) -> dict[str,
                 if not human["approved"]:
                     return stopped("policy_escalation_rejected", phase="execute")
                 executed_action = human["action"]
-                executed_from = "human_revised"
+                executed_from = "human_approved"
                 history_item["human"] = {
                     "approved": True,
                     "reason": human["reason"],
@@ -199,7 +213,12 @@ def run_guarded_policy_agent(*, goal: str, request: dict[str, Any]) -> dict[str,
             "stop_reason": "success",
             "outcome": "policy_guarded_success",
             "answer": answer,
-            "plan": actions,
+            "proposed_plan": actions,
+            "executed_plan": [
+                step["executed_action"]
+                for step in history
+                if isinstance(step, dict) and isinstance(step.get("executed_action"), dict)
+            ],
             "aggregate": aggregate,
             "policy_summary": policy_summary,
             "trace": trace,
