@@ -113,7 +113,7 @@ def run_guarded_policy_agent(*, goal: str, request: dict[str, Any]) -> dict[str,
                 "policy_decision": decision.kind,
                 "policy_reason": decision.reason,
                 "executed_from": "none",
-                "ok": decision.kind != "deny",
+                "ok": False,
             }
             history_item: dict[str, Any] = {
                 "step": idx,
