@@ -13,7 +13,7 @@ def run():
     allowed_sources = {s["id"] for s in snippets}
     context = build_context(snippets, max_chars=700)
 
-    print("Allowed sources:", allowed_sources)
+    print("Allowed sources:", sorted(allowed_sources))
     print("Context:")
     print(context)
 
