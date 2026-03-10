@@ -1,59 +1,66 @@
-# AgentPatterns Examples: Runnable AI Agent Patterns in Python
+# AgentPatterns Examples: Python AI Agent Patterns (ReAct, RAG, Routing, Tool Calling)
 
-Production-style and beginner-friendly **AI agent examples** that map directly to the guides on [agentpatterns.tech](https://agentpatterns.tech).
+Production-ready and beginner-friendly **Python AI agent examples** that map directly to guides on [agentpatterns.tech](https://agentpatterns.tech).
 
-If you want to learn how to build agents with real execution loops, tool boundaries, routing, and safety checks, this repo is the fastest way to run and inspect working code.
+This repository helps you build and understand **LLM agents** with real execution loops, tool calling, memory, routing, orchestration, safety constraints, and recovery strategies.
 
 ## Why this repository
 
-- Learn by running real code, not pseudo-code.
-- Move from simple loops to advanced multi-step agent patterns.
-- Reuse minimal, clean implementations in your own projects.
-- Follow examples that are aligned with concrete docs and architecture explanations.
+- Run real AI agent code, not pseudo-code.
+- Learn a practical path from first agent to advanced multi-agent systems.
+- Reuse minimal production-style implementations in your own projects.
+- Follow examples that stay aligned with architecture guides on `agentpatterns.tech`.
+
+## Topics covered (SEO keywords)
+
+- Python AI agents
+- LLM agent architecture
+- ReAct agent pattern
+- RAG agent in Python
+- Tool calling and function calling
+- Multi-agent collaboration and orchestration
+- Agent memory, routing, reflection, and guardrails
+- AI agent reliability: fallback and recovery
 
 ## Available examples
 
-### Agent Patterns (Core Block)
-
-The most important block of the site and the main architecture layer for production agents.
+### Start here
 
 | Example | Local path | Article |
 | --- | --- | --- |
-| <strong><big>ReAct Agent</big></strong> | `examples/agent-patterns/react-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/react-agent) |
-| <strong><big>Routing Agent</big></strong> | `examples/agent-patterns/routing-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/routing-agent) |
-| <strong><big>Task Decomposition Agent</big></strong> | `examples/agent-patterns/task-decomposition-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/task-decomposition-agent) |
+| Write Your First Agent | `examples/start-here/write-your-first-agent/python` | [Read article](https://agentpatterns.tech/en/start-here/write-your-first-agent) |
 
 ### Foundations
 
 | Example | Local path | Article |
 | --- | --- | --- |
-| **Write Your First Agent** | `examples/start-here/write-your-first-agent/python` | [Read article](https://agentpatterns.tech/en/start-here/write-your-first-agent) |
-| **Tool Calling Basics** | `examples/foundations/tool-calling-basics/python` | [Read article](https://agentpatterns.tech/en/foundations/tool-calling-basics) |
-| **Tool Calling** | `examples/foundations/tool-calling/python` | [Read article](https://agentpatterns.tech/en/foundations/tool-calling) |
-| **LLM Limits in Agents** | `examples/foundations/llm-limits-agents/python` | [Read article](https://agentpatterns.tech/en/foundations/llm-limits-agents) |
+| Tool Calling Basics | `examples/foundations/tool-calling-basics/python` | [Read article](https://agentpatterns.tech/en/foundations/tool-calling-basics) |
+| Tool Calling | `examples/foundations/tool-calling/python` | [Read article](https://agentpatterns.tech/en/foundations/tool-calling) |
+| Agent Memory | `examples/foundations/agent-memory/python` | Code example |
+| Allowed Actions | `examples/foundations/allowed-actions/python` | Code example |
+| Planning vs Reactive | `examples/foundations/planning-vs-reactive/python` | [Read article](https://agentpatterns.tech/en/foundations/planning-vs-reactive) |
+| Stop Conditions | `examples/foundations/stop-conditions/python` | Code example |
+| LLM Limits in Agents | `examples/foundations/llm-limits-agents/python` | [Read article](https://agentpatterns.tech/en/foundations/llm-limits-agents) |
 
-## Project structure
+### Agent patterns
 
-```text
-examples/
-  agent-patterns/
-    react-agent/
-      python/
-    routing-agent/
-      python/
-    task-decomposition-agent/
-      python/
-  foundations/
-    tool-calling-basics/
-      python/
-    tool-calling/
-      python/
-    llm-limits-agents/
-      python/
-  start-here/
-    write-your-first-agent/
-      python/
-```
+| Example | Local path | Article |
+| --- | --- | --- |
+| ReAct Agent | `examples/agent-patterns/react-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/react-agent) |
+| Routing Agent | `examples/agent-patterns/routing-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/routing-agent) |
+| Task Decomposition Agent | `examples/agent-patterns/task-decomposition-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/task-decomposition-agent) |
+| RAG Agent | `examples/agent-patterns/rag-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/rag-agent) |
+| Supervisor Agent | `examples/agent-patterns/supervisor-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/supervisor-agent) |
+| Orchestrator Agent | `examples/agent-patterns/orchestrator-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/orchestrator-agent) |
+| Research Agent | `examples/agent-patterns/research-agent/python` | Code example |
+| Data Analysis Agent | `examples/agent-patterns/data-analysis-agent/python` | Code example |
+| Reflection Agent | `examples/agent-patterns/reflection-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/reflection-agent) |
+| Self-Critique Agent | `examples/agent-patterns/self-critique-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/self-critique-agent) |
+| Memory-Augmented Agent | `examples/agent-patterns/memory-augmented-agent/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/memory-augmented-agent) |
+| Multi-Agent Collaboration | `examples/agent-patterns/multi-agent-collaboration/python` | [Read article](https://agentpatterns.tech/en/agent-patterns/multi-agent-collaboration) |
+| Guarded Policy Agent | `examples/agent-patterns/guarded-policy-agent/python` | Code example |
+| Fallback Recovery Agent | `examples/agent-patterns/fallback-recovery-agent/python` | Code example |
+| Code Execution Agent | `examples/agent-patterns/code-execution-agent/python` | Code example |
 
 ## Quick start
 
@@ -83,9 +90,9 @@ python main.py
 
 ## How this maps to agentpatterns.tech
 
-- **Docs** explain when and why to use each agent pattern.
-- **This repo** shows runnable implementations of those exact patterns.
-- Each example folder includes its own README with direct links to related concepts.
+- **Docs** explain when and why to use each AI agent pattern.
+- **This repo** provides runnable implementations of those exact patterns.
+- Each example folder includes its own README and direct links to relevant concepts.
 
 ## License
 
